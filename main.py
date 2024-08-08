@@ -1,4 +1,6 @@
 import pymupdf as pdf
+import TextExtraction
+import os
 
 doc = pdf.open("Example1.pdf")
 
@@ -72,15 +74,15 @@ def getEndPage(startPage):
     
     return endPage
 
-def manualPrintOutPages(startAndEndPages):
-
-    for chapter in startAndEndPages:
-        for pageNumbers in range(chapter[0], chapter[1] + 1):
-            print("Page number: " + str(pageNumbers))
-            page = doc.load_page(pageNumbers)
-            text = page.get_text()
-            print(text)
-        pass
+def getManualOrLLM():
+    manualOrLLM = input("Would you like to do a manual scan (1), or use the LLM (2)? (1/2): ")
+    if manualOrLLM == "1":
+        return True
+    elif manualOrLLM == "2":
+        return False
+    else:
+        print("Invalid option. Please try again.")
+        return getManualOrLLM()
 
 def getDetails():
     printGetDetailsMessage()
@@ -92,14 +94,16 @@ def getDetails():
         if option == "1":
             continue
         elif option == "2":
-            manualPrintOutPages(startAndEndPages)
-            break
+            manualOrLLM = getManualOrLLM()
+            TextExtraction.TextExtraction(startAndEndPages, manualOrLLM)
+            main()
         elif option == "q":
             exit()
 
 def main():
     printWelcomeMessage()
     option = getOption()
+    os.system('cls')
     switchOption(option)
     main()
 
