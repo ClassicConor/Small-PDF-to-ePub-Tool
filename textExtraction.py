@@ -1,9 +1,7 @@
 import pymupdf as pdf
 from ebooklib import epub
 from langchain_ollama import OllamaLLM
-from langchain_core.prompts import ChatPromptTemplate    
-
-doc = pdf.open("Example1.pdf")
+from langchain_core.prompts import ChatPromptTemplate
 
 class TextExtraction:
     def __init__(self, bookTitle, chapterDetails, chapterNames, LLMExtraction):
