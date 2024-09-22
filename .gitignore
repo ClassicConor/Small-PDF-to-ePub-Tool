@@ -1,5 +1,6 @@
 .venv
-Example1.pdf
+*.pdf
+*.epub
 __pycache__
 test.epub
 textMain.py
