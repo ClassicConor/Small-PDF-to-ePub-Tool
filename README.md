@@ -18,7 +18,7 @@ Using a simple tkinter interface, the user is able to select an PDF file on thei
 
 ## State of the program
 
-The program currently works, however in a limited capacity. PDF files are able to be analysed, and converted into ePub files. There are a number of improvements that I plan on making to this program in the future, including with things relating to the GUI and overall user experience, as well as improving customisability and options available for things such as the detail of the prompting. The way this code is organised can also be updated significantly.
+The program currently works, however in a limited capacity. PDF files are able to be analysed, and converted into ePub files. There are a number of improvements that I plan on making to this program in the future, including with things relating to the GUI and reducing the codebase by deleting code that repeats in certain areas.
 
 This program's main limitation is related to the quality of the LLMs that run on it. From my own personal experience of experimenting with the more complex prompts on LLMs such as Claude 3 and GPT-4o with simple texts, the output has always been perfect, with zero errors, and it has always been able to output the result in such a way that an ePub file can interpret and handle correctly. Using the Llama 3.1 8 billion parameter models locally however, in spite of it being very good much of the time with the simple prompt, there are occassionally issues that are encountered, such as unnecessary footnotes being added.
 
