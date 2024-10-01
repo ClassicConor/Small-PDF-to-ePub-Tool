@@ -2,12 +2,12 @@ from langchain_ollama import OllamaLLM
 from texts import prompts
 
 class LLM:
-    def __init__(self):
+    def __init__(self, prompt):
         self.model = OllamaLLM(model="llama3.1:latest")
-        self.prompt = self.getPrompt()
+        self.prompt = self.getPrompt(prompt)
 
-    def getPrompt(self):
-        template = prompts["simple"]
+    def getPrompt(self, prompt="simple"):
+        template = prompts[prompt]
         return template
 
     def extractText(self, text):

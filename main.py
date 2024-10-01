@@ -41,67 +41,74 @@ class MyApp:
         self.main_frame.grid_columnconfigure(1, weight=1)
 
     def createInitialLeftFrameWidgets(self):
-        self.titleLabel = tk.Label(self.leftFrame, text="Select a PDF file", font=("Helvetica", 12), wraplength=400)
-        self.titleLabel.grid(row=0, column=0, pady=10, sticky="w")
-
+        tk.Label(self.leftFrame, text="Select a PDF file", font=("Helvetica", 12), wraplength=400).grid(row=0, column=0, pady=10, sticky="w")
         self.openPDFButton = tk.Button(self.leftFrame, text="Open PDF", width=20, height=2, command=self.selectFile)
+        self.removePDFBookButton = tk.Button(self.leftFrame, text="Remove PDF", width=20, height=2, command=self.removePDF, state="disabled")
+        
         self.openPDFButton.grid(row=0, column=1, pady=5)
+        self.removePDFBookButton.grid(row=0, column=2, pady=5)
 
     def createInitialRightFrameWidgets(self):
         self.createTopRightFrameWidgets()
         self.createBottomRightFrameWidgets()
 
     def createNextLeftFrameWidgets(self, bookTitle, pageCount):
-        self.bookTitleInputBox = tk.Entry(self.leftFrame, width=5)
-        self.bookTitleInputBox.insert(0, bookTitle)
-        self.bookTitleInputBox.grid(row=0, column=1, pady=5)
-
+        self.bookTitleLabel = tk.Label(self.leftFrame, text="Book Title", font=("Helvetica", 12))
+        self.bookTitleInputBox = tk.Entry(self.leftFrame)
         self.pageCountLabel = tk.Label(self.leftFrame, text=f"Number of Pages {pageCount}", font=("Helvetica", 12))
-        self.pageCountLabel.grid(row=1, column=1, pady=5, sticky="w")
+
+        self.bookTitleInputBox.insert(0, bookTitle)
+        self.bookTitleLabel.grid(row=1, column=0, pady=5, sticky="w")
+        self.bookTitleInputBox.grid(row=1, column=1, pady=5)
+        self.pageCountLabel.grid(row=1, column=2, pady=5, sticky="w")
 
     def createTopRightFrameWidgets(self):
-        self.whichLLMText = tk.Label(self.topRightFrame, text="Which LLM model to use?", font=("Helvetica", 12))
-        self.whichLLMText.grid(row=0, column=0, pady=10, sticky="w")
+        tk.Label(self.topRightFrame, text="Which LLM model to use?", font=("Helvetica", 12)).grid(row=0, column=0, pady=10, sticky="w")
+        tk.Label(self.topRightFrame, text="Which prompt to use?", font=("Helvetica", 12)).grid(row=2, column=0, pady=10, sticky="w")
 
         clickedLLMSelection = tk.StringVar()
         LLMOptions = ["llama3.1:8b"]
         clickedLLMSelection.set(LLMOptions[0])
-        self.dropDown = tk.OptionMenu(self.topRightFrame, clickedLLMSelection, "llama3.1:8b")
-        self.dropDown.grid(row=1, column=0, pady=10, sticky="w")
+        self.LLMdropDown = tk.OptionMenu(self.topRightFrame, clickedLLMSelection, "llama3.1:8b")
+        self.LLMdropDown.grid(row=1, column=0, pady=10, sticky="w")
+
+        clickedPromptSelection = tk.StringVar()
+        promptOptions = ["simple", "medium", "complex", "chapter"]
+        clickedPromptSelection.set(promptOptions[0])
+        self.promptDropDown = tk.OptionMenu(self.topRightFrame, clickedPromptSelection, "simple", "medium", "complex", "chapter")
+        self.promptDropDown.grid(row=3, column=0, pady=10, sticky="w")
 
     def createBottomRightFrameWidgets(self):
-        self.scanPDFButton = tk.Button(self.bottomRightFrame, text="Scan PDF", width=20, height=2, command=self.scanPDF)
-        self.scanPDFButton.grid(row=0, column=0, pady=5)
-
+        self.scanPDFButton = tk.Button(self.bottomRightFrame, text="Scan PDF", width=20, height=2, command=self.scanPDF, state="disabled")
         self.exitButton = tk.Button(self.bottomRightFrame, text="Exit Application", width=20, height=2, command=self.root.quit)
+
+        self.scanPDFButton.grid(row=0, column=0, pady=5)
         self.exitButton.grid(row=1, column=0, pady=5)
 
     def createChapterManagementWidgets(self):
-        self.chapterListbox = tk.Listbox(self.chapterFrame, width=50, height=10)
+        self.chapterListbox = tk.Listbox(self.chapterFrame, width=50, height=10, state="disabled")
+        self.addChapterButton = tk.Button(self.chapterFrame, text="Add Chapter", command=self.addChapter, state="disabled")
+        self.editChapterButton = tk.Button(self.chapterFrame, text="Edit Chapter", command=self.editChapter, state="disabled")
+        self.deleteChapterButton = tk.Button(self.chapterFrame, text="Delete Chapter", command=self.deleteChapter, state="disabled")
+        self.moveUpButton = tk.Button(self.chapterFrame, text="Move Up", command=self.moveChapterUp, state="disabled")
+        self.moveDownButton = tk.Button(self.chapterFrame, text="Move Down", command=self.moveChapterDown, state="disabled")
+
         self.chapterListbox.grid(row=0, column=0, padx=5, pady=5, rowspan=5)
-
-        self.addChapterButton = tk.Button(self.chapterFrame, text="Add Chapter", command=self.addChapter)
         self.addChapterButton.grid(row=0, column=1, padx=5, pady=5)
-
-        self.editChapterButton = tk.Button(self.chapterFrame, text="Edit Chapter", command=self.editChapter)
         self.editChapterButton.grid(row=1, column=1, padx=5, pady=5)
-
-        self.deleteChapterButton = tk.Button(self.chapterFrame, text="Delete Chapter", command=self.deleteChapter)
         self.deleteChapterButton.grid(row=2, column=1, padx=5, pady=5)
-
-        self.moveUpButton = tk.Button(self.chapterFrame, text="Move Up", command=self.moveChapterUp)
         self.moveUpButton.grid(row=3, column=1, padx=5, pady=5)
-
-        self.moveDownButton = tk.Button(self.chapterFrame, text="Move Down", command=self.moveChapterDown)
         self.moveDownButton.grid(row=4, column=1, padx=5, pady=5)
 
     def addChapter(self):
         chapter_window = tk.Toplevel(self.root)
+        chapter_window.focus_set()
         chapter_window.title("Add Chapter")
 
         tk.Label(chapter_window, text="Chapter Name:").grid(row=0, column=0, padx=5, pady=5)
         name_entry = tk.Entry(chapter_window)
         name_entry.grid(row=0, column=1, padx=5, pady=5)
+        name_entry.focus_set()
 
         tk.Label(chapter_window, text="Start Page:").grid(row=1, column=0, padx=5, pady=5)
         start_entry = tk.Entry(chapter_window)
@@ -116,38 +123,47 @@ class MyApp:
             start = start_entry.get()
             end = end_entry.get()
             if name and start and end:
-                if self.checkErrors(name, start, end):
+                checkedErrors = self.checkErrors(name, start, end)
+                print(type(checkedErrors))
+                print(checkedErrors)
+                if type(checkedErrors) == bool:
                     self.chapters.append({"name": name, "start": int(start), "end": int(end)})
                     self.updateChapterListbox()
                     chapter_window.destroy()
+                else:
+                    focusedWidget = chapter_window.focus_get()
+                    messagebox.showwarning("Warning", checkedErrors)
+                    focusedWidget.focus_set()
+            else:
+                focusedWidget = chapter_window.focus_get()
+                messagebox.showerror("Error", "Please enter a number for start and end page")
+                focusedWidget.focus_set()
 
-        tk.Button(chapter_window, text="Save", command=save_chapter).grid(row=3, column=0, columnspan=2, pady=10)
+        name_entry.bind("<Return>", lambda event: save_chapter())
+        start_entry.bind("<Return>", lambda event: save_chapter())
+        end_entry.bind("<Return>", lambda event: save_chapter())
+
+        saveChapterButton = tk.Button(chapter_window, text="Save", command=save_chapter)
+        saveChapterButton.grid(row=3, column=0, columnspan=2, pady=10)
+        saveChapterButton.bind("<Return>", lambda event: save_chapter())
 
     def checkErrors(self, name, start, end):
         if not start.isdigit() or not end.isdigit():
-            messagebox.showwarning("Warning", "Please enter a number for start and end page")
-            return False
+            return "Please enter a number for start and end page"
         if int(start) > int(end):
-            messagebox.showwarning("Warning", "Start page cannot be greater than end page")
-            return False
+            return "Start page cannot be greater than end page"
         if int(start) > self.pageCount or int(end) > self.pageCount:
-            messagebox.showwarning("Warning", "Page number cannot be greater than total page count")
-            return False
+            return "Page number cannot be greater than total page count"
         if int(start) < 1 or int(end) < 1:
-            messagebox.showwarning("Warning", "Page number cannot be less than 1")
-            return False
+            return "Page number cannot be less than 1"
         if any(chapter["name"] == name for chapter in self.chapters):
-            messagebox.showwarning("Warning", "Chapter with that name already exists")
-            return False
+            return "Chapter with that name already exists"
         if any(int(start) >= int(chapter["start"]) and int(start) <= int(chapter["end"]) for chapter in self.chapters):
-            messagebox.showwarning("Warning", "Chapter with that start page already exists")
-            return False
+            return "Chapter with that start page already exists"
         if any(int(end) >= int(chapter["start"]) and int(end) <= int(chapter["end"]) for chapter in self.chapters):
-            messagebox.showwarning("Warning", "Chapter with that end page already exists")
-            return
+            return "Chapter with that end page already exists"
         if any(int(start) <= int(chapter["start"]) and int(end) >= int(chapter["end"]) for chapter in self.chapters):
-            messagebox.showwarning("Warning", "Chapter with that page range already exists")
-            return
+            return "Chapter with that page range already exists"
         return True
 
     def editChapter(self):
@@ -182,11 +198,27 @@ class MyApp:
             start = start_entry.get()
             end = end_entry.get()
             if name and start and end:
-                self.chapters[index] = {"name": name, "start": start, "end": end}
-                self.updateChapterListbox()
-                chapter_window.destroy()
+                checkedErrors = self.checkErrors(name, start, end)
+                if type(checkedErrors) == bool:
+                    self.chapters[index] = {"name": name, "start": start, "end": end}
+                    self.updateChapterListbox()
+                    chapter_window.destroy()
+                else:
+                    focusedWidget = chapter_window.focus_get()
+                    messagebox.showwarning("Warning", checkedErrors)
+                    focusedWidget.focus_set()
+            else:
+                focusedWidget = chapter_window.focus_get()
+                messagebox.showerror("Error", "Please enter a number for start and end page")
+                focusedWidget.focus_set()
 
-        tk.Button(chapter_window, text="Save Changes", command=save_changes).grid(row=3, column=0, columnspan=2, pady=10)
+        name_entry.bind("<Return>", lambda event: save_changes())
+        start_entry.bind("<Return>", lambda event: save_changes())
+        end_entry.bind("<Return>", lambda event: save_changes())
+
+        saveChangesButton = tk.Button(chapter_window, text="Save Changes", command=save_changes)
+        saveChangesButton.grid(row=3, column=0, columnspan=2, pady=10)
+        saveChangesButton.bind("<Return>", lambda event: save_changes())
 
     def deleteChapter(self):
         selected = self.chapterListbox.curselection()
@@ -230,7 +262,7 @@ class MyApp:
         )
 
         if filePath:
-            self.book = Book(filePath)
+            self.book = Book(filePath, self.promptDropDown.cget("text"))
             self.pageCount = self.book.getBookPageCount()
             if self.pageCount != 0:
                 self.bookTitle = self.book.getTitle()
@@ -242,33 +274,50 @@ class MyApp:
                 )
                 self.createNextLeftFrameWidgets(self.bookTitle, self.pageCount)
                 self.openPDFButton.config(text=f"{self.bookTitle}.pdf")
+                self.enableButtons()
             else:
                 messagebox.showerror("Error", "No pages found in PDF")
 
-    def evaluateNumbers(self, firstPage, lastPage):
-        try:
-            startChapterNumber = int(firstPage)
-            endChapterNumber = int(lastPage)
-        except ValueError:
-            messagebox.showerror("Error", "Please enter a number")
-            return False
+    def enableButtons(self):
+        self.removePDFBookButton.config(state="normal")
+        self.scanPDFButton.config(state="normal")
+        self.addChapterButton.config(state="normal")
+        self.editChapterButton.config(state="normal")
+        self.deleteChapterButton.config(state="normal")
+        self.moveUpButton.config(state="normal")
+        self.moveDownButton.config(state="normal")
+        self.chapterListbox.config(state="normal")
 
-        if startChapterNumber > endChapterNumber:
-            messagebox.showerror("Error", "Start page number cannot be greater than end page number")
-            return False
-        
-        if startChapterNumber > self.pageCount or endChapterNumber > self.pageCount:
-            messagebox.showerror("Error", "Page number cannot be greater than total page count")
-            return False
+    def removePDF(self):
 
-        if startChapterNumber < 1 or endChapterNumber < 1:
-            messagebox.showerror("Error", "Page number cannot be less than 1")
-            return False
-        return True
+        self.book = None
+        self.chapters = []
+        self.pageCount = None
+
+        self.openPDFButton.config(text="Open PDF")
+        self.bookTitleLabel.destroy()
+        self.bookTitleInputBox.destroy()
+        self.pageCountLabel.destroy()
+
+        self.removePDFBookButton.config(state="disabled")
+        self.scanPDFButton.config(state="disabled")
+        self.addChapterButton.config(state="disabled")
+        self.editChapterButton.config(state="disabled")
+        self.deleteChapterButton.config(state="disabled")
+        self.moveUpButton.config(state="disabled")
+        self.moveDownButton.config(state="disabled")
+        self.chapterListbox.config(state="disabled")
+
+        self.chapterListbox.delete(0, tk.END)
 
     def scanPDF(self):
         print("Scanning PDF")
 
+        if self.chapterListbox.size() == 0:
+            messagebox.showerror("Error", "Please add chapters before scanning")
+            return
+
+        self.book.addTitle(self.bookTitleInputBox.get())
         self.book.addChapters(self.chapters)
 
         thread1 = threading.Thread(target=self.book.extractChapters)

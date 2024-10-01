@@ -4,13 +4,16 @@ from ebooklib import epub
 from LLMTextAnalysis import LLM
 
 class Book:
-    def __init__(self, path):
+    def __init__(self, path, prompt):
         self.path = path
         self.book = pymupdf.open(self.path)
-        self.LLM = LLM()
+        self.LLM = LLM(prompt)
         self.chapters = []
-        self.extractedChapters = []
+        self.bookTitle = None
     
+    def addTitle(self, title):
+        self.bookTitle = title
+
     def getTitle(self):
         return os.path.basename(self.path.split(".")[0])
     
@@ -20,39 +23,51 @@ class Book:
     def addChapters(self, chapters):
         self.chapters = chapters
 
-    def getExtractedChapter(self):
-        return self.extractChapters
+    def emptyChapters(self):
+        self.chapters = []
 
     def extractChapters(self):
+        self.extractedChapters = []
+        self.listOfChapters = []
         for chapter in self.chapters:
-            self.extractedChapters.append(self.extractPage(chapter["start"], chapter["end"]))
+            self.extractedChapters.append(self.extractPage(int(chapter["start"]), int(chapter["end"]), chapter["name"]))
+            self.listOfChapters.append(chapter["name"])
 
-        self.convertToEPUB()
+        self.convertToEPUB(self.listOfChapters)
+        print("Book finished")
 
-    def extractPage(self, startPage, endPage):
+    def extractPage(self, startPage, endPage, chapterTitle=""):
         text = ""
         for pageNum in range(startPage, endPage + 1):
             page = self.book.load_page(pageNum)
             text += self.LLM.extractText(page.get_text())
 
-        text = text.strip()
+        text = f"<h1>{chapterTitle}</h1>" + text.strip()
 
         print("New text\n", text.strip())
 
         return text
-    
-    def convertToEPUB(self):
+
+    def convertToEPUB(self, listOfChapters):
         book = epub.EpubBook()
-        book.set_title("Example1")
+        book.set_title(self.bookTitle)
         book.set_identifier("id1")
         book.set_language("en")
         book.add_author("Author")
 
-        spine = ["nav"]
-        toc = []
+        # Create the title page
+        title_page = epub.EpubHtml(title="Title Page", file_name="title_page.xhtml", lang="en")
+        title_page.content = f"<h1>{self.bookTitle}</h1>"
+        book.add_item(title_page)
+
+        # Start the spine with the title page, then toc page
+        spine = [title_page, 'nav']
+
+        # Start the toc with the title page
+        toc = [epub.Section('Title Page', [title_page])]
 
         for chapterNum, theChapter in enumerate(self.extractedChapters):
-            chapterItem = self.addChapterToBook(book, chapterNum, theChapter)
+            chapterItem = self.addChapterToBook(book, theChapter, listOfChapters[chapterNum])
             spine.append(chapterItem)
             toc.append(chapterItem)
 
@@ -62,13 +77,13 @@ class Book:
         book.spine = spine
         book.toc = toc
 
-        epub.write_epub("Example1.epub", book, {})
+        epub.write_epub(f"{self.bookTitle}.epub", book, {})
 
-    def addChapterToBook(self, book, chapterNum, formattedText):
-        chapterTitle = f"Chapter {chapterNum}.xhtml"
+    def addChapterToBook(self, book, formattedText, chapterTitle):
+        chapterTitleFileName = f"{chapterTitle}.xhtml"
         chapter = epub.EpubHtml(
-            title=f"Chapter {chapterNum}",
-            file_name=chapterTitle,
+            title=chapterTitle,
+            file_name=chapterTitleFileName,
             lang="en",
         )
 
